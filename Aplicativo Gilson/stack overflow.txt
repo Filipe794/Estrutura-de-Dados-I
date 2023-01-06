@@ -1,3 +1,0 @@
-https://www.tutorialspoint.com/c_standard_library/c_function_rand.htm
-
-https://pt.stackoverflow.com/questions/289663/remover-o-primeiro-elemento-de-uma-lista-duplamente-encadeada-c
