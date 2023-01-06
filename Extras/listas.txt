@@ -1,0 +1,12 @@
+alocação dinamica de lista
+
+fzr funções
+
+sempre criar um ponteiro auxiliar para receber a cabeça da lista
+
+criar lista
+
+No *lista=NULL;
+
+para passar na função com ponteiro pra ponteiro
+inserir_inicio(&lista,valor);

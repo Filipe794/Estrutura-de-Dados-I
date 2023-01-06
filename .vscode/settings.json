@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "string.h": "c",
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "functional": "cpp",
+        "initializer_list": "cpp",
+        "streambuf": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "PROVA FILA cainan.C": "cpp",
+        "ratio": "cpp",
+        "*.lib": "cpp"
+    }
+}
