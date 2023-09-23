@@ -6,78 +6,31 @@
 typedef struct No
 {
     char Nome[40];
-    int aNo_fabricacao, preco_compra, preco_venda;
+    int ano_fabricacao, preco_compra, preco_venda;
     struct No *proximo;
     struct No *anterior;
 
 } No;
 
-void inserir_No_inicio(No **lista, No *Novo)
+
+
+No *criar_no()
 {
-
-    Novo->proximo = *lista;
-    Novo->anterior = NULL;
-
-    if (*lista != NULL)
-    {
-
-        (*lista)->anterior = Novo;
-    }
-
-    *lista = Novo;
-}
-
-void ler_No(No *No)
-{
+    No *node = (No *)malloc(sizeof(No));
 
     printf("Digite o Nome do veiculo: ");
-    scanf("%s", No->Nome);
+    scanf("%s", node->Nome);
     fflush(stdin);
 
-    printf("Digite o aNo de fabricação: ");
-    scanf("%d", &No->aNo_fabricacao);
+    printf("Digite o ano de fabricação: ");
+    scanf("%d", &node->ano_fabricacao);
 
     printf("Digite o valor de compra: ");
-    scanf("%d", &No->preco_compra);
+    scanf("%d", &node->preco_compra);
 
-    No->preco_venda = (No->preco_compra * 1.2);
-}
+    node->preco_venda = (node->preco_compra * 1.2);
 
-void inserir_ordenado(No **lista)
-{
-
-    No *aux, *Novo = (No *)malloc(sizeof(No));
-    ler_No(Novo);
-    if (*lista == NULL)
-    {
-
-        Novo->proximo = NULL;
-        Novo->anterior = NULL;
-
-        *lista = Novo;
-    }
-    else if (strcmp(Novo->Nome, (*lista)->Nome) < 0)
-    {
-        Novo->proximo = *lista;
-        Novo->anterior = NULL;
-        if (*lista != NULL)
-        {
-            (*lista)->anterior = Novo;
-        }
-        *lista = Novo;
-    }
-    else
-    {
-        aux = *lista;
-        while (aux->proximo != NULL && strcmp(Novo->Nome, aux->Nome) > 0)
-        {
-            aux = aux->proximo;
-        }
-        Novo->proximo = aux;
-        Novo->anterior = aux->anterior;
-        aux->anterior->proximo = Novo;
-        aux->anterior = Novo;
-    }
+    return node;
 }
 
 void remover_No(No **lista, int valor)
@@ -138,7 +91,7 @@ void imprimir_lista(No *No)
     {
         printf("Nome do veiculo: %s\n", No->Nome);
 
-        printf("aNo de fabricação: %d\n", No->aNo_fabricacao);
+        printf("aNo de fabricação: %d\n", No->ano_fabricacao);
 
         printf("valor de compra: %d\n ", No->preco_compra);
 
@@ -177,7 +130,7 @@ void busca_preco(No *No)
         {
             printf("Nome do veiculo: %s\n", No->Nome);
 
-            printf("aNo de fabricação: %d\n", No->aNo_fabricacao);
+            printf("aNo de fabricação: %d\n", No->ano_fabricacao);
 
             printf("valor de compra: %d\n ", No->preco_compra);
 
@@ -194,11 +147,11 @@ void busca_aNo(No *No)
     scanf("%d", &valor);
     while (No != NULL)
     {
-        if (No->aNo_fabricacao == valor)
+        if (No->ano_fabricacao == valor)
         {
             printf("Nome do veiculo: %s\n", No->Nome);
 
-            printf("aNo de fabricação: %d\n", No->aNo_fabricacao);
+            printf("aNo de fabricação: %d\n", No->ano_fabricacao);
 
             printf("valor de compra: %d\n ", No->preco_compra);
 
@@ -267,45 +220,61 @@ No *busca_Nome(No *No,int valor_negociado){
     }
 }
 
-void inserir_ordenado_2(No **lista, No *Novo)
+void inserir_ordenado(No **lista, No *node)
 {
-
-    No *aux;
-    if (*lista == NULL)
+    if (node == NULL)
     {
-        Novo->proximo = NULL;
-        Novo->anterior = NULL;
-        *lista = Novo;
+        return;
     }
-    else if (strcmp(Novo->Nome, (*lista)->Nome) < 0)
+
+    if ((*lista) == NULL) // lista vazia
     {
-        Novo->proximo = *lista;
-        Novo->anterior = NULL;
-        if (*lista != NULL)
-        {
-            (*lista)->anterior = Novo;
-        }
-        *lista = Novo;
+        node->proximo = NULL;
+        node->anterior = NULL;
+        (*lista) = node;
+        return;
     }
     else
     {
-        aux = *lista;
-        while (aux->proximo != NULL && strcmp(Novo->Nome, aux->Nome) > 0)
-        {
+        if (strcmp(node->Nome, (*lista)->Nome) < 0)
+        { // Inserindo inicio
+            node->proximo = (*lista);
+            node->anterior = NULL;
+            (*lista)->anterior = node;
+            (*lista) = node;
+            return;
+        }
+
+        No *aux = *lista;
+        No *anterior = NULL;
+
+        while (aux != NULL && strcmp(node->Nome, aux->Nome) >= 0)
+        { // Inserir No meio da lista
+            anterior = aux;
             aux = aux->proximo;
         }
-        Novo->proximo = aux;
-        Novo->anterior = aux->anterior;
-        aux->anterior->proximo = Novo;
-        aux->anterior = Novo;
+        if (aux != NULL)
+        {
+            node->proximo = aux;
+            node->anterior = anterior;
+            anterior->proximo = node;
+            aux->anterior = node;
+            return;
+        }
+        else{
+        node->proximo = NULL; // Inserindo fim
+        node->anterior = anterior;
+        anterior->proximo = node;
+        }
     }
+    return;
 }
-
 
 int main()
 {
     No *a_vender = NULL;
     No *vendido = NULL;
+    No *node = NULL;
     int opc = 1;
     while (opc != 0)
     {
@@ -316,7 +285,8 @@ int main()
         {
         case 1:
             fflush(stdin);
-            inserir_ordenado(&a_vender);
+            node = criar_no();
+            inserir_ordenado(&a_vender,node);
             break;
 
         case 2:
