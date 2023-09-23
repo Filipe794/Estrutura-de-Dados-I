@@ -5,76 +5,75 @@
 
 typedef struct No
 {
-    char Nome[40];
-    int ano_fabricacao, preco_compra, preco_venda;
+    char nome[40];
+    int ano_fabricacao;
+    int preco_compra;
+    int preco_venda;
     struct No *proximo;
     struct No *anterior;
 
 } No;
 
-
-
-No *criar_no()
+No *remover_no(No **lista, No *remover)
 {
-    No *node = (No *)malloc(sizeof(No));
+    if (remover == NULL)
+    {
+        return NULL;
+    }
 
-    printf("Digite o Nome do veiculo: ");
-    scanf("%s", node->Nome);
-    fflush(stdin);
+    if ((*lista) == NULL)
+    {
+        return NULL;
+    }
 
-    printf("Digite o ano de fabricação: ");
-    scanf("%d", &node->ano_fabricacao);
+    if ((*lista) == remover)
+    {
+        (*lista) = remover->proximo;
 
-    printf("Digite o valor de compra: ");
-    scanf("%d", &node->preco_compra);
+        if ((*lista) != NULL)
+        {
 
-    node->preco_venda = (node->preco_compra * 1.2);
+            (*lista)->anterior = NULL;
+        }
 
-    return node;
+        remover->proximo = NULL;
+        return remover;
+    }
+
+    No *anterior = remover->anterior;
+    No *proximo = remover->proximo;
+
+    if (anterior != NULL)
+    {
+        anterior->proximo = proximo;
+    }
+
+    if (proximo != NULL)
+    {
+        proximo->anterior = anterior;
+    }
+
+    remover->proximo = NULL;
+    remover->anterior = NULL;
+
+    return remover;
 }
 
-void remover_No(No **lista, int valor)
+void imprimir_no(No *node)
 {
-
-    No *aux, *remover = NULL;
-
-    if (*lista != NULL)
+    if (node == NULL)
     {
-
-        if ((*lista)->preco_compra >= valor)
-        {
-
-            *lista = remover->proximo;
-            remover = *lista;
-
-            if (*lista != NULL)
-            {
-
-                (*lista)->anterior = NULL;
-            }
-        }
-        else
-        {
-
-            aux = *lista;
-            while (aux->proximo != NULL && aux->proximo->preco_compra != valor)
-            {
-
-                aux = aux->proximo;
-            }
-            if (aux->proximo != NULL)
-            {
-                remover = aux->proximo;
-                aux->proximo = remover->proximo;
-
-                if (aux->proximo != NULL)
-                {
-
-                    aux->proximo->anterior = aux;
-                }
-            }
-        }
+        printf("NULL");
+        return;
     }
+
+    printf("Nome do veiculo: %s\n", node->nome);
+
+    printf("ano de fabricação: %d\n", node->ano_fabricacao);
+
+    printf("valor de compra: %d\n ", node->preco_compra);
+
+    printf("valor de venda: %d\n ", node->preco_venda);
 }
 
 void imprimir_lista(No *No)
@@ -89,13 +88,7 @@ void imprimir_lista(No *No)
 
     while (No != NULL)
     {
-        printf("Nome do veiculo: %s\n", No->Nome);
-
-        printf("aNo de fabricação: %d\n", No->ano_fabricacao);
-
-        printf("valor de compra: %d\n ", No->preco_compra);
-
-        printf("valor de venda: %d\n ", No->preco_venda);
+        imprimir_no(No);
 
         No = No->proximo;
     }
@@ -126,21 +119,15 @@ void busca_preco(No *No)
     scanf("%d", &valor);
     while (No != NULL)
     {
-        if (No->preco_venda < valor)
+        if (No->preco_venda <= valor)
         {
-            printf("Nome do veiculo: %s\n", No->Nome);
-
-            printf("aNo de fabricação: %d\n", No->ano_fabricacao);
-
-            printf("valor de compra: %d\n ", No->preco_compra);
-
-            printf("valor de venda: %d\n ", No->preco_venda);
+            imprimir_no(No);
         }
         No = No->proximo;
     }
 }
 
-void busca_aNo(No *No)
+void busca_ano(No *No)
 {
     int valor;
     printf("insira o aNo de fabricação a ser procurado: ");
@@ -149,75 +136,57 @@ void busca_aNo(No *No)
     {
         if (No->ano_fabricacao == valor)
         {
-            printf("Nome do veiculo: %s\n", No->Nome);
-
-            printf("aNo de fabricação: %d\n", No->ano_fabricacao);
-
-            printf("valor de compra: %d\n ", No->preco_compra);
-
-            printf("valor de venda: %d\n ", No->preco_venda);
+            imprimir_no(No);
         }
         No = No->proximo;
     }
 }
 
-void lucro(No *a_vender, No *vendido)
+No *busca_nome(No *node, char *modelo)
 {
-    int lucro = 0, soma_venda = 0, soma_estoque = 0;
+    while (node != NULL)
+    {
+        if (strcmp(modelo, node->nome) == 0)
+        {
+            return node;
+        }
+        node = node->proximo;
+    }
+    return NULL;
+}
 
-    No *aux = a_vender;
+void lucro(No *vendido)
+{
+    int lucro, total_venda = 0, total_compra = 0;
+
+    No *aux = vendido;
     while (aux != NULL)
     {
-        soma_estoque = soma_estoque + aux->preco_compra;
+        total_venda = total_venda + aux->preco_venda;
+        total_compra = total_compra + aux->preco_compra;
         aux = aux->proximo;
     }
-    aux = vendido;
-    while (aux != NULL)
-    {
-        soma_venda = soma_venda + aux->preco_venda;
-        aux = aux->proximo;
-    }
-    lucro = soma_venda + soma_estoque;
+    lucro = total_venda - total_compra;
     printf("%d", lucro);
 }
 
-/*
-void vender(No **No, No **No_2)
+No *criar_no()
 {
-int valor_negociado;
-printf("qual o valor da venda:");
-    scanf("%d", &valor_negociado);
-    No *aux = *No;
-    No *remover;
-    remover = busca_Nome(*No,valor_negociado);
-    remover_No(&No,valor_negociado);
-    inserir_ordenado_2(&No_2,remover);
-}
-*/
+    No *node = (No *)malloc(sizeof(No));
 
-No *busca_Nome(No *No,int valor_negociado){
-    
-    char modelo[40];
-    printf("Insira o modelo do carro:");
-    scanf("%s", modelo);
+    printf("Digite o Nome do veiculo: ");
+    scanf("%s", node->nome);
     fflush(stdin);
-    
-     while (No->proximo != NULL){
-        if (strcmp(modelo, No->Nome) == 0){
-            return No;
-     }
-     No=No->proximo;
-     if(No->proximo==NULL){
-         if (strcmp(modelo, No->Nome) != 0)
-            {
-                printf("carro nao encontrado");
-            }
-            else if (valor_negociado < No->preco_venda)
-            {
-                printf("o valor de venda está abaixo do valor de compra, venda não permitida");
-            }else printf("carro nao encontrado");
-     }
-    }
+
+    printf("Digite o ano de fabricação: ");
+    scanf("%d", &node->ano_fabricacao);
+
+    printf("Digite o valor de compra: ");
+    scanf("%d", &node->preco_compra);
+
+    node->preco_venda = (node->preco_compra * 1.2);
+
+    return node;
 }
 
 void inserir_ordenado(No **lista, No *node)
@@ -236,7 +205,7 @@ void inserir_ordenado(No **lista, No *node)
     }
     else
     {
-        if (strcmp(node->Nome, (*lista)->Nome) < 0)
+        if (strcmp(node->nome, (*lista)->nome) < 0)
         { // Inserindo inicio
             node->proximo = (*lista);
             node->anterior = NULL;
@@ -248,7 +217,7 @@ void inserir_ordenado(No **lista, No *node)
         No *aux = *lista;
         No *anterior = NULL;
 
-        while (aux != NULL && strcmp(node->Nome, aux->Nome) >= 0)
+        while (aux != NULL && strcmp(node->nome, aux->nome) >= 0)
         { // Inserir No meio da lista
             anterior = aux;
             aux = aux->proximo;
@@ -261,20 +230,53 @@ void inserir_ordenado(No **lista, No *node)
             aux->anterior = node;
             return;
         }
-        else{
-        node->proximo = NULL; // Inserindo fim
-        node->anterior = anterior;
-        anterior->proximo = node;
+        else
+        {
+            node->proximo = NULL; // Inserindo fim
+            node->anterior = anterior;
+            anterior->proximo = node;
         }
     }
     return;
+}
+
+void vender(No **a_vender, No **vendido)
+{
+    char nome[40];
+    int valor_negociado;
+    No *remover;
+
+    printf("Qual carro foi vendido? (modelo)");
+    scanf("%s", nome);
+
+    remover = busca_nome((*a_vender), nome);
+    if (remover == NULL)
+    {
+        printf("Veiculo não existe no sistema");
+        return;
+    }
+
+    printf("qual o valor da venda:");
+    scanf("%d", &valor_negociado);
+
+    if (valor_negociado < remover->preco_compra)
+    {
+        printf("Valor de venda não permitido, está abaixo do preco de compra");
+        return;
+    }
+
+    remover->preco_venda = valor_negociado;
+
+    remover = remover_no(a_vender, remover);
+    inserir_ordenado(vendido, remover);
 }
 
 int main()
 {
     No *a_vender = NULL;
     No *vendido = NULL;
-    No *node = NULL;
+    No *node;
+
     int opc = 1;
     while (opc != 0)
     {
@@ -286,7 +288,7 @@ int main()
         case 1:
             fflush(stdin);
             node = criar_no();
-            inserir_ordenado(&a_vender,node);
+            inserir_ordenado(&a_vender, node);
             break;
 
         case 2:
@@ -302,14 +304,14 @@ int main()
             break;
 
         case 5:
-            busca_aNo(a_vender);
+            busca_ano(a_vender);
             break;
 
         case 6:
-            lucro(a_vender, vendido);
+            lucro(vendido);
             break;
         case 7:
-            //vender(&a_vender, &vendido);
+            vender(&a_vender, &vendido);
             break;
 
         default:
